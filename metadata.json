@@ -1,0 +1,7 @@
+{
+  "name": "TlakRevízie - TNS Inspector",
+  "description": "Profesionálna aplikácia na tvorbu revíznych správ tlakových nádob s AI asistentom.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
