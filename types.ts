@@ -6,14 +6,17 @@ export interface ThicknessMeasurements {
   bottomHead: string;
 }
 
+export type ReportType = 'TNS' | 'GZ';
+
 export interface InspectionReport {
   id: string; // Unikátne ID pre databázu
   createdAt: number; // Dátum vytvorenia záznamu
+  reportType: ReportType; // TNS = Tlaková nádoba stabilná, GZ = Plynové zariadenie
 
   // Header
   reportDate: string;
-  reportNumber: string; // e.g., 0376/20/10...
-  nextInspectionDate: string; // NOVÉ: Plánovanie
+  reportNumber: string;
+  nextInspectionDate: string;
 
   // Parties
   operatorName: string; // Prevádzkovateľ
@@ -25,38 +28,78 @@ export interface InspectionReport {
   technicianName: string;
   technicianLicense: string; // Číslo osvedčenia
 
-  // Technical Data (TNS)
+  // ================================================================
+  // TECHNICAL DATA - TNS (Tlaková nádoba stabilná)
+  // ================================================================
   tnsType: string;
   manufacturer: string;
   serialNumber: string;
   yearOfManufacture: string;
   volumeLiters: string;
   nominalTemp: string;
-  nominalPressure: string;
+  nominalPressure: string; // MPa
   medium: string; // voda/vzduch
   classification: string; // Zaradenie (e.g., Ab1)
 
-  // Equipment used
+  // Equipment used (TNS)
   ultrasonicDevice: string;
   pressureGauge: string;
 
-  // Measurements
+  // Measurements (TNS)
   measurements: ThicknessMeasurements;
-  minMeasurement: string; // Auto-calculated usually, but editable
+  minMeasurement: string;
 
-  // Tests
-  pressureTestValue: string; // 0,6 MPa
-  visualInspectionResult: string; // Neboli zistené...
+  // Tests (TNS)
+  pressureTestValue: string;
+  visualInspectionResult: string;
 
-  // Conclusion
-  conclusion: string; // TN je schopná...
+  // Conclusion (TNS)
+  conclusion: string;
+
+  // ================================================================
+  // TECHNICAL DATA - GZ (Plynové zariadenie)
+  // Vyhláška MPSVaR SR č. 508/2009 Z.z. Príloha č. 3
+  // ================================================================
+
+  // Technical parameters
+  gasInstallationType: string; // DOPZ / Kotolňa / Priemyselné PZ / atď.
+  gasType: string;             // Zemný plyn / Propán-bután / Mestský plyn
+  gasPressureLevel: string;    // NTL / STL / VTL
+  gasOperatingPressure: string; // Prevádzkový tlak (kPa)
+  gasMaxPressure: string;       // Maximálny prevádzkový tlak MOP (kPa)
+  gasPipeMaterial: string;      // Oceľ / Meď / PE / Nerez
+  gasPipeDiameter: string;      // DN
+  gasPipeLength: string;        // Dĺžka plynovodu (m)
+  gasApplianceCount: string;    // Počet plynových spotrebičov (ks)
+  gasInstallationYear: string;  // Rok inštalácie
+  gasAnnualConsumption: string; // Ročná spotreba (m³/rok)
+
+  // Inspection results (GZ)
+  gasVisualInspectionResult: string;  // Vizuálna kontrola zariadenia
+  gasTightnessTestPressure: string;   // Skúšobný tlak (kPa)
+  gasTightnessTestMedium: string;     // Skúšobné médium
+  gasTightnessTestDuration: string;   // Dĺžka trvania skúšky (min)
+  gasTightnessTestResult: string;     // Vyhovela / Nevyhovela
+
+  // Inspection checklist (GZ)
+  gasShutoffValvesResult: string;  // Bezpečnostné uzávery: OK / Závada / N/A
+  gasRegulatorResult: string;      // Regulátory tlaku: OK / Závada / N/A
+  gasManometerResult: string;      // Manometre: OK / Závada / N/A
+  gasMeterResult: string;          // Plynoměr: OK / Závada / N/A
+  gasChimneyResult: string;        // Dymovody a komíny: OK / Závada / N/A
+  gasVentilationResult: string;    // Vetranie a prívod vzduchu: OK / Závada / N/A
+
+  // Defects & conclusion (GZ)
+  gasDefectsFound: string;
+  gasConclusion: string;
 }
 
 export const initialReportState: InspectionReport = {
   id: '',
   createdAt: 0,
+  reportType: 'TNS',
   reportDate: new Date().toISOString().split('T')[0],
-  nextInspectionDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0], // Default +1 rok
+  nextInspectionDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
   reportNumber: '',
   operatorName: '',
   operatorAddress: '',
@@ -64,6 +107,8 @@ export const initialReportState: InspectionReport = {
   siteAddress: '',
   technicianName: 'Ing. Jozef Revízny',
   technicianLicense: '001/2024/TNS',
+
+  // TNS defaults
   tnsType: '',
   manufacturer: '',
   serialNumber: '',
@@ -86,4 +131,30 @@ export const initialReportState: InspectionReport = {
   pressureTestValue: '0.6',
   visualInspectionResult: 'Neboli zistené korozívne úbytky ani deformácie.',
   conclusion: 'TN je schopná bezpečnej prevádzky.',
+
+  // GZ defaults
+  gasInstallationType: 'DOPZ - Domový plynovod a odberné plynové zariadenie',
+  gasType: 'Zemný plyn',
+  gasPressureLevel: 'NTL (do 5 kPa)',
+  gasOperatingPressure: '2.1',
+  gasMaxPressure: '5',
+  gasPipeMaterial: 'Oceľ',
+  gasPipeDiameter: 'DN 25',
+  gasPipeLength: '',
+  gasApplianceCount: '',
+  gasInstallationYear: '',
+  gasAnnualConsumption: '',
+  gasVisualInspectionResult: 'Bez viditeľných závad a netesností. Potrubný rozvod, armatúry a spoje sú v dobrom technickom stave.',
+  gasTightnessTestPressure: '1.5',
+  gasTightnessTestMedium: 'Vzduch',
+  gasTightnessTestDuration: '10',
+  gasTightnessTestResult: 'Vyhovela',
+  gasShutoffValvesResult: 'OK',
+  gasRegulatorResult: 'OK',
+  gasManometerResult: 'OK',
+  gasMeterResult: 'OK',
+  gasChimneyResult: 'OK',
+  gasVentilationResult: 'OK',
+  gasDefectsFound: 'Neboli zistené žiadne závady.',
+  gasConclusion: 'Plynové zariadenie je schopné bezpečnej prevádzky.',
 };
