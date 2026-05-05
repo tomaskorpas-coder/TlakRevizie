@@ -8,6 +8,51 @@ export interface ThicknessMeasurements {
 
 export type ReportType = 'TNS' | 'GZ';
 
+// ================================================================
+// EZ - Elektrické zariadenia
+// STN 33 1500, STN 33 2000-6, STN 33 1600, STN 33 1610, STN EN 62305
+// ================================================================
+
+export type EZInspectionType = 'EI' | 'HN' | 'RN' | 'SP';
+
+export interface EZMeasurement {
+  id: string;
+  measurementType: string;
+  location: string;
+  value: string;
+  unit: string;
+  requiredValue: string;
+  result: 'OK' | 'NOK' | 'N/A';
+  rawTranscript?: string;
+}
+
+export interface EZInspection {
+  id: string;
+  createdAt: number;
+  electricalType: EZInspectionType;
+  inspectionKind: 'vychadzajuca' | 'pravidelna' | 'mimoriadna';
+  reportDate: string;
+  reportNumber: string;
+  nextInspectionDate: string;
+  objectName: string;
+  objectAddress: string;
+  operatorName: string;
+  operatorAddress: string;
+  technicianName: string;
+  technicianLicense: string;
+  technicianLicenseValidity: string;
+  nominalVoltage: string;
+  systemType: string;
+  installedPower: string;
+  protectionMethod: string;
+  measuringDevices: string;
+  measurements: EZMeasurement[];
+  defectsFound: string;
+  conclusion: string;
+  conclusionResult: 'vyhovel' | 'nevyhovel' | 'podmienecne';
+  notes: string;
+}
+
 export interface InspectionReport {
   id: string; // Unikátne ID pre databázu
   createdAt: number; // Dátum vytvorenia záznamu

@@ -3,6 +3,7 @@ import { InspectionReport, ReportType, initialReportState, ThicknessMeasurements
 import { TankDiagram } from './components/TankDiagram';
 import { ReportPreview } from './components/ReportPreview';
 import { GasReportPreview } from './components/GasReportPreview';
+import { ElectricInspectionModule } from './components/ElectricInspectionModule';
 import { extractDataFromImage, fileToGenerativePart } from './services/geminiService';
 import {
   Camera,
@@ -32,12 +33,13 @@ import {
   Flame,
   Gauge,
   X,
+  Zap,
 } from 'lucide-react';
 
 const STEPS_TNS = ['Základné Údaje', 'Technické Parametre', 'Merania', 'Záver'];
 const STEPS_GZ  = ['Základné Údaje', 'Parametre PZ', 'Výsledky', 'Záver'];
 
-type ViewState = 'dashboard' | 'type-selection' | 'editor';
+type ViewState = 'dashboard' | 'type-selection' | 'editor' | 'ez-module';
 
 // Reusable styled input/select
 const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
@@ -330,6 +332,13 @@ export default function App() {
   };
 
   // ═══════════════════════════════════════════════════════════════
+  // VIEW: EZ MODULE
+  // ═══════════════════════════════════════════════════════════════
+  if (view === 'ez-module') {
+    return <ElectricInspectionModule onBack={() => setView('dashboard')} />;
+  }
+
+  // ═══════════════════════════════════════════════════════════════
   // VIEW: TYPE SELECTION
   // ═══════════════════════════════════════════════════════════════
   if (view === 'type-selection') {
@@ -350,6 +359,23 @@ export default function App() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
+            {/* EZ Card */}
+            <button
+              onClick={() => setView('ez-module')}
+              className="group text-left p-8 bg-white rounded-[2rem] border-2 border-slate-100 hover:border-violet-300 hover:shadow-2xl hover:shadow-violet-100 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] md:col-span-2"
+            >
+              <div className="w-16 h-16 bg-violet-600 rounded-2xl flex items-center justify-center mb-6 shadow-xl shadow-violet-200 group-hover:scale-110 transition-transform">
+                <Zap size={32} className="text-white" />
+              </div>
+              <h3 className="text-2xl font-black text-slate-900 mb-2">Elektrické zariadenia</h3>
+              <p className="text-slate-500 text-sm leading-relaxed mb-4">
+                Elektrické inštalácie, hromozvody, ručné náradie, spotrebiče — s hlasovým zadávaním meraní
+              </p>
+              <div className="text-xs text-violet-500 font-bold uppercase tracking-widest">
+                STN 33 1500 • STN 33 2000-6 • STN EN 62305 • STN 33 1600
+              </div>
+            </button>
+
             {/* TNS Card */}
             <button
               onClick={() => startNewReport('TNS')}
